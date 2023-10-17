@@ -19,6 +19,7 @@ class MainActivity : AppCompatActivity() {
 
         setupView()
         setupAction()
+        setupData()
     }
 
     private fun setupView() {
@@ -37,6 +38,41 @@ class MainActivity : AppCompatActivity() {
     private fun setupAction() {
         binding.settingImageView.setOnClickListener {
             startActivity(Intent(Settings.ACTION_LOCALE_SETTINGS))
+        }
+    }
+
+    private fun setupData() {
+        val repository = RemoteDataSource(this)
+        val product = repository.getDetailProduct().apply {
+            binding.apply {
+                previewImageView.setImageResource(image)
+                nameTextView.text = name
+                storeTextView.text = store
+                colorTextView.text = color
+                sizeTextView.text = size
+                descTextView.text = desc
+                priceTextView.text = price.withCurrencyFormat()
+                dateTextView.text = getString(R.string.dateFormat, date.withDateFormat())
+                ratingTextView.text = getString(R.string.ratingFormat, rating.withNumberingFormat(), countRating.withNumberingFormat())
+            }
+        }
+        setupAccessibility(product)
+    }
+
+    private fun setupAccessibility(productModel: ProductModel) {
+        productModel.apply {
+            binding.apply {
+                settingImageView.contentDescription = getString(R.string.settingDescription)
+                previewImageView.contentDescription = getString(R.string.previewDescription)
+                colorTextView.contentDescription = getString(R.string.colorDescription, color)
+                sizeTextView.contentDescription = getString(R.string.sizeDescription, size)
+                ratingTextView.contentDescription = getString(
+                    R.string.ratingDescription,
+                    rating.withNumberingFormat(),
+                    countRating.withNumberingFormat()
+                )
+                storeTextView.contentDescription = getString(R.string.storeDescription, store)
+            }
         }
     }
 }
